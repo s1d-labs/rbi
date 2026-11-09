@@ -1,0 +1,12 @@
+{
+  "family": "rbi",
+  "about": "Reserve Bank of India (www.rbi.org.in): named-entity regulatory data. Registered and cancelled NBFCs/ARCs, enforcement monetary penalties on named banks and NBFCs, and authorised Payment System Operators.",
+  "setup": [
+    "pip install -r requirements.txt"
+  ],
+  "tasks": {
+    "enforcement": ["python", "enforcement.py"],
+    "authorised": ["python", "authorised.py"],
+    "nbfc": ["python", "nbfc.py"]
+  }
+}

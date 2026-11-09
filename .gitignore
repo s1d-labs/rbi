@@ -1,0 +1,4 @@
+.scrape-check/
+__pycache__/
+*.pyc
+.pytest_cache/
