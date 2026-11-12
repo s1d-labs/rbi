@@ -136,22 +136,6 @@ def detail_url(prid):
 
 # ---- hub loop ----------------------------------------------------------------------------------------------------
 
-class LocalHub:
-    settings = {"threads": 1, "delay_ms": 0, "paused": False}
-
-    def __init__(self):
-        self.counts = {}
-
-    def metric(self, name, value=1):
-        self.counts[name] = self.counts.get(name, 0) + value
-
-    def error(self, n=1):
-        self.metric("errors", n)
-
-    def block(self, n=1):
-        self.metric("blocked", n)
-
-
 def _process_month(hub, session, year, month, fields, record):
     """Fetch one month, store a record for every penalty. `record(prid, data)` is given by the caller."""
     data = dict(fields)
@@ -177,6 +161,8 @@ def _process_month(hub, session, year, month, fields, record):
 
 
 def local(year, month):
+    from scrape_hub_client import LocalHub   # counters in hub.counts, like the HubClient metrics
+
     hub = LocalHub()
     session = requests.Session()
     base_html = fetch(hub, session, BASE)

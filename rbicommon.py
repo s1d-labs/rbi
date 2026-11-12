@@ -5,7 +5,6 @@ helper the tasks share: it reports the standard counters (n_http, t_http_s, http
 politeness and tracking, and marks blocks (403/429/503) and errors for the hub's automatic back-off.
 """
 import re
-import time
 
 UA = "s1d-labs scraper (+https://github.com/s1d-labs)"
 
@@ -53,22 +52,13 @@ def make_fetch(requests_module):
     """Return a `fetch(hub, session, url, **kw)` bound to a `requests` module.
 
     Kept as a factory so `rbicommon` imports cleanly without requests installed (the pure tests do not need it).
+    `timed_request` catches `requests.RequestException`, the same errors as before.
     """
     def fetch(hub, session, url, method="GET", data=None, timeout=40, binary=False):
-        t = time.time()
-        try:
-            r = session.request(method, url, data=data, timeout=timeout,
-                                 headers={"User-Agent": UA})
-        except requests_module.RequestException:
-            hub.metric("http_error")
-            hub.error()
-            return None
-        hub.metric("n_http")
-        hub.metric("t_http_s", time.time() - t)
-        if r.status_code != 200:
-            hub.metric(f"http_{r.status_code}")
-            if r.status_code in (403, 429, 503):
-                hub.block()
+        from scrape_hub_client import timed_request   # counts n_http, t_http_s, http_<code>, http_error; 403/429/503 -> hub.block()
+
+        r = timed_request(hub, session, method, url, data=data, timeout=timeout, headers={"User-Agent": UA})
+        if r is None or r.status_code != 200:
             return None
         if binary:
             return r.content

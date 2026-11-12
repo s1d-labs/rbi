@@ -89,23 +89,9 @@ def parse_authorised(html, url=None):
 
 # ---- hub loop ----------------------------------------------------------------------------------------------------
 
-class LocalHub:
-    settings = {"threads": 1, "delay_ms": 0, "paused": False}
-
-    def __init__(self):
-        self.counts = {}
-
-    def metric(self, name, value=1):
-        self.counts[name] = self.counts.get(name, 0) + value
-
-    def error(self, n=1):
-        self.metric("errors", n)
-
-    def block(self, n=1):
-        self.metric("blocked", n)
-
-
 def local():
+    from scrape_hub_client import LocalHub   # counters in hub.counts, like the HubClient metrics
+
     hub = LocalHub()
     page = fetch(hub, requests.Session(), SITE)
     rows = parse_authorised(page, url=SITE) if page else []

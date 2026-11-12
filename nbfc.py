@@ -148,23 +148,9 @@ def parse_nbfc(content, kind, url=None):
 
 # ---- hub loop ----------------------------------------------------------------------------------------------------
 
-class LocalHub:
-    settings = {"threads": 1, "delay_ms": 0, "paused": False}
-
-    def __init__(self):
-        self.counts = {}
-
-    def metric(self, name, value=1):
-        self.counts[name] = self.counts.get(name, 0) + value
-
-    def error(self, n=1):
-        self.metric("errors", n)
-
-    def block(self, n=1):
-        self.metric("blocked", n)
-
-
 def local(src, kind):
+    from scrape_hub_client import LocalHub   # counters in hub.counts, like the HubClient metrics
+
     hub = LocalHub()
     if re.match(r"^https?://", src):
         content = fetch(hub, requests.Session(), src, binary=True)
